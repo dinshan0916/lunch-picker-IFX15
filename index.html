@@ -163,7 +163,7 @@ function renderList(){
   btn.disabled = !mode || list.length === 0;
   btn.textContent = !mode ? "請先選一個選項"
                   : list.length === 0 ? "沒有符合的餐廳"
-                  : "🎲 幫我決定!";
+                  : "🎲 抽!";
 }
 
 document.querySelectorAll(".mode-btn").forEach(b => b.addEventListener("click", () => {
