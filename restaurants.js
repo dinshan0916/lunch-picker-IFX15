@@ -20,7 +20,7 @@ const RESTAURANTS = [
   { name:"瑞哥雞肉飯", area:"江南街", category:"", modes:["外帶"] },
   { name:"溫泉雞",     area:"江南街", category:"", modes:["外帶"] },
   { name:"豐禾便當",   area:"江南街", category:"", modes:["外帶"] },
-  { name:"夯客食堂",   area:"江南街", category:"", modes:["內用","外帶"] },
+  { name:"昇客肉食堂",   area:"江南街", category:"", modes:["內用","外帶"] },
   { name:"陶鍋",       area:"江南街", category:"", modes:["內用"] },
   { name:"韓膳樓",     area:"江南街", category:"", modes:["內用"] },
   { name:"牛閣",       area:"江南街", category:"", modes:["內用"] },
