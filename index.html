@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>薪水換熱量 | 午餐選擇器</title>
+<style>
+  :root{
+    --red:#E4002B;
+    --blue:#003A8C;
+    --green:#00A58E;
+    --white:#FFFFFF;
+    --bg:#F3F6FA;
+    --text:#1b2433;
+    --muted:#6b778c;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.5;
+  }
+  header{
+    background:var(--blue);color:var(--white);
+    text-align:center;padding:28px 16px 22px;position:relative;
+  }
+  header::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:6px;
+    background:linear-gradient(90deg,var(--red) 0 33.3%,var(--white) 33.3% 66.6%,var(--green) 66.6% 100%);
+  }
+  header h1{font-size:clamp(28px,6vw,42px);letter-spacing:4px}
+  header p{opacity:.85;margin-top:4px;font-size:14px}
+
+  main{max-width:860px;margin:0 auto;padding:24px 16px 60px}
+  .question{font-size:16px;color:var(--muted);font-weight:600;margin-bottom:12px;text-align:center}
+
+  .modes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .mode-btn{
+    border:3px solid var(--blue);background:var(--white);color:var(--blue);
+    border-radius:16px;padding:18px 4px;font-size:clamp(17px,4.6vw,24px);font-weight:700;cursor:pointer;
+    transition:.15s;line-height:1.3;
+  }
+  .mode-btn .ico{display:block;font-size:1.3em;margin-bottom:2px}
+  .mode-btn:active{transform:scale(.97)}
+
+  .mode-btn[data-mode="內用"]{border-color:var(--blue);color:var(--blue)}
+  .mode-btn[data-mode="外帶"]{border-color:var(--red);color:var(--red)}
+  .mode-btn[data-mode="都可以"]{border-color:var(--green);color:var(--green)}
+  .mode-btn.active[data-mode="內用"]{background:var(--blue);color:var(--white)}
+  .mode-btn.active[data-mode="外帶"]{background:var(--red);color:var(--white)}
+  .mode-btn.active[data-mode="都可以"]{background:var(--green);color:var(--white)}
+
+  .draw{margin-top:26px;text-align:center}
+  .draw-btn{
+    width:100%;max-width:420px;border:none;background:var(--green);color:var(--white);
+    font-size:22px;font-weight:700;padding:18px;border-radius:16px;cursor:pointer;
+    box-shadow:0 6px 0 #007a69;transition:.1s;
+  }
+  .draw-btn:active{transform:translateY(4px);box-shadow:0 2px 0 #007a69}
+  .draw-btn:disabled{background:#b8c2d0;box-shadow:0 6px 0 #97a3b5;cursor:not-allowed}
+
+  .result{
+    margin-top:18px;background:var(--white);border-radius:16px;padding:22px 16px;
+    border-top:6px solid var(--green);min-height:110px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+    box-shadow:0 4px 14px rgba(0,0,0,.06);
+  }
+  .result .name{font-size:clamp(26px,6vw,36px);font-weight:800;color:var(--blue)}
+  .result .meta{color:var(--muted);font-size:14px}
+  .result.spin .name{color:var(--muted)}
+  .result.pop{animation:pop .4s}
+  @keyframes pop{0%{transform:scale(.9)}60%{transform:scale(1.05)}100%{transform:scale(1)}}
+
+  .list-title{margin-top:34px;display:flex;justify-content:space-between;align-items:center}
+  .list-title h2{font-size:18px;color:var(--blue)}
+  .list-title span{color:var(--muted);font-size:14px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-top:12px}
+  .card{
+    background:var(--white);border-radius:12px;padding:14px;
+    border-left:5px solid var(--blue);box-shadow:0 2px 8px rgba(0,0,0,.05);
+  }
+  .card h3{font-size:17px}
+  .tags{margin:6px 0 0;display:flex;flex-wrap:wrap;gap:6px}
+  .tag{font-size:12px;padding:2px 8px;border-radius:6px;background:#e8eef7;color:var(--blue)}
+  .tag.dine{background:#e3edff;color:var(--blue)}
+  .tag.take{background:#ffe5e9;color:var(--red)}
+  .card .note{font-size:13px;color:var(--muted);margin-top:6px}
+  .empty{text-align:center;color:var(--muted);padding:30px 0;grid-column:1/-1}
+  footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>薪水換熱量</h1>
+  <p>今天中午,要吃什麼?</p>
+</header>
+
+<main>
+  <p class="question">內用還是外帶?</p>
+  <div class="modes">
+    <button class="mode-btn" data-mode="內用"><span class="ico">🍽️</span>內用</button>
+    <button class="mode-btn" data-mode="外帶"><span class="ico">🥡</span>外帶</button>
+    <button class="mode-btn" data-mode="都可以"><span class="ico">🙌</span>都可以</button>
+  </div>
+
+  <section class="draw">
+    <button class="draw-btn" id="drawBtn" disabled>請先選一個選項</button>
+    <div class="result" id="result" hidden></div>
+  </section>
+
+  <section id="listSection" hidden>
+    <div class="list-title">
+      <h2>候選名單</h2><span id="count"></span>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+</main>
+
+<footer>薪水換熱量 © 每天都要吃飽飽</footer>
+
+<script src="restaurants.js"></script>
+<script>
+let mode = null;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c =>
+  ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+
+// 「都可以」= 內用、外帶兩種都支援的店
+function filtered(){
+  if (mode === "都可以") {
+    return RESTAURANTS.filter(r => r.modes.includes("內用") && r.modes.includes("外帶"));
+  }
+  return RESTAURANTS.filter(r => r.modes.includes(mode));
+}
+
+function modeTags(r){
+  const both = r.modes.includes("內用") && r.modes.includes("外帶");
+  if (mode === "都可以") {
+    return `<span class="tag dine">內用</span><span class="tag take">外帶</span>`;
+  }
+  if (both) return `<span class="tag ${mode==="內用"?"take":"dine"}">也可${mode==="內用"?"外帶":"內用"}</span>`;
+  return "";
+}
+
+function renderList(){
+  const list = mode ? filtered() : [];
+  $("listSection").hidden = !mode;
+  $("count").textContent = `共 ${list.length} 間`;
+  $("grid").innerHTML = list.length ? list.map(r => `
+    <div class="card">
+      <h3>${esc(r.name)}</h3>
+      <div class="tags">
+        ${r.area ? `<span class="tag">📍${esc(r.area)}</span>` : ""}
+        ${r.category ? `<span class="tag">${esc(r.category)}</span>` : ""}
+        ${r.price ? `<span class="tag">💰${esc(r.price)}</span>` : ""}
+        ${modeTags(r)}
+      </div>
+      ${r.note ? `<div class="note">${esc(r.note)}</div>` : ""}
+    </div>`).join("")
+    : `<div class="empty">目前沒有符合的餐廳 😅</div>`;
+
+  const btn = $("drawBtn");
+  btn.disabled = !mode || list.length === 0;
+  btn.textContent = !mode ? "請先選一個選項"
+                  : list.length === 0 ? "沒有符合的餐廳"
+                  : "🎲 幫我決定!";
+}
+
+document.querySelectorAll(".mode-btn").forEach(b => b.addEventListener("click", () => {
+  mode = b.dataset.mode;
+  document.querySelectorAll(".mode-btn").forEach(x => x.classList.toggle("active", x === b));
+  $("result").hidden = true;
+  renderList();
+}));
+
+let timer = null;
+$("drawBtn").addEventListener("click", () => {
+  const list = filtered();
+  if (!list.length) return;
+  const box = $("result");
+  const btn = $("drawBtn");
+  clearInterval(timer);
+  box.hidden = false;
+  box.className = "result spin";
+  btn.disabled = true;
+
+  timer = setInterval(() => {
+    const r = list[Math.floor(Math.random() * list.length)];
+    box.innerHTML = `<div class="name">${esc(r.name)}</div>`;
+  }, 80);
+
+  setTimeout(() => {
+    clearInterval(timer);
+    const r = list[Math.floor(Math.random() * list.length)];
+    box.className = "result pop";
+    box.innerHTML = `
+      <div class="meta">今天就吃 ↓</div>
+      <div class="name">${esc(r.name)}</div>
+      <div class="meta">${esc([r.area, r.category, r.price].filter(Boolean).join(" ・ "))}</div>
+      ${r.note ? `<div class="meta">${esc(r.note)}</div>` : ""}`;
+    btn.disabled = false;
+    btn.textContent = "🎲 再抽一次";
+  }, 1400);
+});
+
+renderList();
+</script>
+</body>
+</html>
