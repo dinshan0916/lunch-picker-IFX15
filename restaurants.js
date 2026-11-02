@@ -31,5 +31,14 @@ const RESTAURANTS = [
   { name:"麥當勞",           area:"瑞光路", category:"", modes:["外帶"] },
   { name:"美好時光餐盒",     area:"瑞光路", category:"", modes:["外帶"] },
   { name:"金春喜韓廚",       area:"瑞光路", category:"", modes:["內用"] },
+  
+  // ---------- 西湖 ----------
+  { name:"泰回味",           area:"西湖", category:"", modes:["外帶"] },
+  { name:"煎餅果子",           area:"西湖", category:"", modes:["外帶"] },
+  { name:"八時牛堂 牛肉麵",           area:"西湖", category:"", modes:["內用"] },
 
+
+  // ---------- 737商圈 ----------
+  { name:"豪華小吃部",           area:"737商圈", category:"", modes:["外帶"] },
+ 
 ];
