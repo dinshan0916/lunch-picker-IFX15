@@ -102,7 +102,6 @@
 </header>
 
   <a class="add-link" href="https://forms.gle/sAkoeXp1YPQdkjMS8" target="_blank" rel="noopener">➕ 點我前往新增候選店家</a>
-  <p class="add-hint">填寫後經確認就會上架</p>
 <main>
   <p class="question">內用還是外帶?</p>
   <div class="modes">
@@ -165,10 +164,9 @@ async function loadSheet(){
       return {
         name: get("店名"),
         area: get("地區"),
-        ok: get("上架").toUpperCase(),
         modes: ["內用","外帶"].filter(m => get("用餐方式").includes(m))
       };
-    }).filter(r => r.name && r.modes.length && r.ok === "Y");
+    }).filter(r => r.name && r.modes.length);
 
     const names = new Set(ALL.map(r => r.name));
     extra.forEach(r => { if (!names.has(r.name)){ ALL.push(r); names.add(r.name); } });
