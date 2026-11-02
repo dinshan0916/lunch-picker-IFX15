@@ -122,12 +122,56 @@
 </script>
 <script>
 let mode = null;
+
+// ▼ 貼上試算表「發布到網路」的 CSV 連結(放在雙引號中間)
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTlGKx3rsESOzmwvtdJbuFLMAncPRZAYEj7jlnnrE88yUYSxlMU1F1gNf7LwqnM5IaPp4a7WEwZm2gP/pub?gid=600908702&single=true&output=csv";
+
+// 先放 restaurants.js 裡的固定清單,再合併表單來的資料
+let ALL = [...RESTAURANTS];
+
+function parseCSV(text){
+  const rows = []; let row = [], cell = "", q = false;
+  for (let i = 0; i < text.length; i++){
+    const c = text[i];
+    if (q){
+      if (c === '"'){ if (text[i+1] === '"'){ cell += '"'; i++; } else q = false; }
+      else cell += c;
+    } else if (c === '"') q = true;
+    else if (c === ',') { row.push(cell); cell = ""; }
+    else if (c === '\n'){ row.push(cell); rows.push(row); row = []; cell = ""; }
+    else if (c !== '\r') cell += c;
+  }
+  if (cell || row.length){ row.push(cell); rows.push(row); }
+  return rows;
+}
+
+async function loadSheet(){
+  if (!SHEET_CSV_URL.startsWith("http")) return;
+  try{
+    const res = await fetch(SHEET_CSV_URL);
+    const rows = parseCSV(await res.text());
+    const head = rows[0].map(h => h.trim());
+    const extra = rows.slice(1).map(r => {
+      const get = n => (r[head.indexOf(n)] || "").trim();
+      return {
+        name: get("店名"),
+        area: get("地區"),
+        ok: get("上架").toUpperCase(),
+        modes: ["內用","外帶"].filter(m => get("用餐方式").includes(m))
+      };
+    }).filter(r => r.name && r.modes.length && r.ok === "Y");
+
+    const names = new Set(ALL.map(r => r.name));
+    extra.forEach(r => { if (!names.has(r.name)){ ALL.push(r); names.add(r.name); } });
+    renderList();
+  }catch(e){ console.warn("讀取表單資料失敗", e); }
+}
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c =>
   ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 
 function filtered(){
-  return RESTAURANTS.filter(r => r.modes.includes(mode));
+  return ALL.filter(r => r.modes.includes(mode));
 }
 
 // 內用外帶皆可的店,顯示「也可外帶」或「也可內用」
@@ -201,6 +245,7 @@ $("drawBtn").addEventListener("click", () => {
 });
 
 renderList();
+loadSheet();
 </script>
 </body>
 </html>
