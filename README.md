@@ -2,4 +2,8 @@
 
 要吃什麼
 
+抽抽樂
 https://dinshan0916.github.io/lunch-picker-IFX15/
+
+
+新增候選店家
