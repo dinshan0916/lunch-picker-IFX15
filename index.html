@@ -79,7 +79,6 @@
   .card .note{font-size:13px;color:var(--muted);margin-top:6px}
   .empty{text-align:center;color:var(--muted);padding:30px 0;grid-column:1/-1}
   footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
-
   /* 新增候選店家按鈕 */
   .add-link{
     display:block;max-width:420px;margin:32px auto 0;text-align:center;
@@ -87,6 +86,8 @@
     border-radius:16px;padding:14px;font-size:16px;font-weight:700;text-decoration:none;
   }
   .add-link:active{transform:scale(.97)}
+  /* 淺色備註 */
+  .add-hint{text-align:center;color:var(--muted);font-size:12px;margin-top:8px;opacity:.85}
 </style>
 </head>
 <body>
@@ -94,7 +95,6 @@
   <h1>薪水換熱量</h1>
   <p>今天中午,要吃什麼?</p>
 </header>
-
 <main>
   <p class="question">內用還是外帶?</p>
   <div class="modes">
@@ -111,12 +111,10 @@
     </div>
     <div class="grid" id="grid"></div>
   </section>
-
   <a class="add-link" href="https://forms.gle/sAkoeXp1YPQdkjMS8" target="_blank" rel="noopener">➕ 點我前往新增候選店家</a>
+  <p class="add-hint">填寫表單後,需等待 5-10 分鐘才會更新至系統</p>
 </main>
-
 <footer>薪水換熱量 © 吃飽睡覺準備下班</footer>
-
 <!-- 每次開啟都抓最新的餐廳清單,避免吃到舊快取 -->
 <script>
   document.write('<script src="restaurants.js?t=' + Date.now() + '"><\/script>');
@@ -145,7 +143,7 @@ function parseCSV(text){
 async function loadSheet(){
   if (!SHEET_CSV_URL.startsWith("http")) return;
   try{
-    const res = await fetch(SHEET_CSV_URL);
+    const res = await fetch(SHEET_CSV_URL + "&t=" + Date.now());
     const rows = parseCSV(await res.text());
     const head = rows[0].map(h => h.trim());
     const extra = rows.slice(1).map(r => {
