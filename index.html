@@ -80,6 +80,8 @@
   .card h3{font-size:17px}
   .tags{margin:6px 0 0;display:flex;flex-wrap:wrap;gap:6px}
   .tag{font-size:12px;padding:2px 8px;border-radius:6px;background:#e8eef7;color:var(--blue)}
+  .tag.dine{background:#e3edff;color:var(--blue)}
+  .tag.take{background:#ffe5e9;color:var(--red)}
   .card .note{font-size:13px;color:var(--muted);margin-top:6px}
   .empty{text-align:center;color:var(--muted);padding:30px 0;grid-column:1/-1}
   footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
@@ -128,6 +130,15 @@ function filtered(){
   return RESTAURANTS.filter(r => r.modes.includes(mode));
 }
 
+// 內用外帶皆可的店,顯示「也可外帶」或「也可內用」
+function modeTags(r){
+  const both = r.modes.includes("內用") && r.modes.includes("外帶");
+  if (!both) return "";
+  return mode === "內用"
+    ? `<span class="tag take">也可外帶</span>`
+    : `<span class="tag dine">也可內用</span>`;
+}
+
 function renderList(){
   const list = mode ? filtered() : [];
   $("listSection").hidden = !mode;
@@ -139,6 +150,7 @@ function renderList(){
         ${r.area ? `<span class="tag">📍${esc(r.area)}</span>` : ""}
         ${r.category ? `<span class="tag">${esc(r.category)}</span>` : ""}
         ${r.price ? `<span class="tag">💰${esc(r.price)}</span>` : ""}
+        ${modeTags(r)}
       </div>
       ${r.note ? `<div class="note">${esc(r.note)}</div>` : ""}
     </div>`).join("")
@@ -148,7 +160,7 @@ function renderList(){
   btn.disabled = !mode || list.length === 0;
   btn.textContent = !mode ? "請先選內用或外帶"
                   : list.length === 0 ? "沒有符合的餐廳"
-                  : "🎲 幫我決定!";
+                  : "🎲 抽!";
 }
 
 document.querySelectorAll(".mode-btn").forEach(b => b.addEventListener("click", () => {
