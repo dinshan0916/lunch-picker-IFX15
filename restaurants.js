@@ -29,7 +29,7 @@ const RESTAURANTS = [
   { name:"Subway",           area:"瑞光路", category:"", modes:["外帶"] },
   { name:"Haloa夏威夷拌飯",  area:"瑞光路", category:"", modes:["外帶"] },
   { name:"麥當勞",           area:"瑞光路", category:"", modes:["外帶"] },
-  { name:"美好時光餐盒",     area:"瑞光路", category:"", modes:["外帶"] },
+  { name:"日常時光餐盒",     area:"瑞光路", category:"", modes:["外帶"] },
   { name:"金春喜韓廚",       area:"瑞光路", category:"", modes:["內用"] },
   
   // ---------- 西湖 ----------
