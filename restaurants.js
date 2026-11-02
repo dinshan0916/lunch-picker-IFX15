@@ -33,7 +33,7 @@ const RESTAURANTS = [
   { name:"金春喜韓廚",       area:"瑞光路", category:"", modes:["內用"] },
   
   // ---------- 西湖 ----------
-  { name:"泰回味",           area:"西湖", category:"", modes:["外帶"] },
+  { name:"泰回味",           area:"西湖", category:"", modes:["內用"] },
   { name:"煎餅果子",           area:"西湖", category:"", modes:["外帶"] },
   { name:"八時牛堂 牛肉麵",           area:"西湖", category:"", modes:["內用"] },
 
