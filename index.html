@@ -33,10 +33,11 @@
   main{max-width:860px;margin:0 auto;padding:24px 16px 60px}
   .question{font-size:16px;color:var(--muted);font-weight:600;margin-bottom:12px;text-align:center}
 
-  .modes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  /* 兩個選項 */
+  .modes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .mode-btn{
     border:3px solid var(--blue);background:var(--white);color:var(--blue);
-    border-radius:16px;padding:18px 4px;font-size:clamp(17px,4.6vw,24px);font-weight:700;cursor:pointer;
+    border-radius:16px;padding:20px 8px;font-size:clamp(20px,5vw,26px);font-weight:700;cursor:pointer;
     transition:.15s;line-height:1.3;
   }
   .mode-btn .ico{display:block;font-size:1.3em;margin-bottom:2px}
@@ -44,10 +45,8 @@
 
   .mode-btn[data-mode="內用"]{border-color:var(--blue);color:var(--blue)}
   .mode-btn[data-mode="外帶"]{border-color:var(--red);color:var(--red)}
-  .mode-btn[data-mode="都可以"]{border-color:var(--green);color:var(--green)}
   .mode-btn.active[data-mode="內用"]{background:var(--blue);color:var(--white)}
   .mode-btn.active[data-mode="外帶"]{background:var(--red);color:var(--white)}
-  .mode-btn.active[data-mode="都可以"]{background:var(--green);color:var(--white)}
 
   .draw{margin-top:26px;text-align:center}
   .draw-btn{
@@ -81,8 +80,6 @@
   .card h3{font-size:17px}
   .tags{margin:6px 0 0;display:flex;flex-wrap:wrap;gap:6px}
   .tag{font-size:12px;padding:2px 8px;border-radius:6px;background:#e8eef7;color:var(--blue)}
-  .tag.dine{background:#e3edff;color:var(--blue)}
-  .tag.take{background:#ffe5e9;color:var(--red)}
   .card .note{font-size:13px;color:var(--muted);margin-top:6px}
   .empty{text-align:center;color:var(--muted);padding:30px 0;grid-column:1/-1}
   footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
@@ -100,11 +97,10 @@
   <div class="modes">
     <button class="mode-btn" data-mode="內用"><span class="ico">🍽️</span>內用</button>
     <button class="mode-btn" data-mode="外帶"><span class="ico">🥡</span>外帶</button>
-    <button class="mode-btn" data-mode="都可以"><span class="ico">🙌</span>都可以</button>
   </div>
 
   <section class="draw">
-    <button class="draw-btn" id="drawBtn" disabled>請先選一個選項</button>
+    <button class="draw-btn" id="drawBtn" disabled>請先選內用或外帶</button>
     <div class="result" id="result" hidden></div>
   </section>
 
@@ -118,28 +114,18 @@
 
 <footer>薪水換熱量 © 每天都要吃飽飽</footer>
 
-<script src="restaurants.js"></script>
+<!-- 每次開啟都抓最新的餐廳清單,避免吃到舊快取 -->
+<script>
+  document.write('<script src="restaurants.js?t=' + Date.now() + '"><\/script>');
+</script>
 <script>
 let mode = null;
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c =>
   ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 
-// 「都可以」= 內用、外帶兩種都支援的店
 function filtered(){
-  if (mode === "都可以") {
-    return RESTAURANTS.filter(r => r.modes.includes("內用") && r.modes.includes("外帶"));
-  }
   return RESTAURANTS.filter(r => r.modes.includes(mode));
-}
-
-function modeTags(r){
-  const both = r.modes.includes("內用") && r.modes.includes("外帶");
-  if (mode === "都可以") {
-    return `<span class="tag dine">內用</span><span class="tag take">外帶</span>`;
-  }
-  if (both) return `<span class="tag ${mode==="內用"?"take":"dine"}">也可${mode==="內用"?"外帶":"內用"}</span>`;
-  return "";
 }
 
 function renderList(){
@@ -153,7 +139,6 @@ function renderList(){
         ${r.area ? `<span class="tag">📍${esc(r.area)}</span>` : ""}
         ${r.category ? `<span class="tag">${esc(r.category)}</span>` : ""}
         ${r.price ? `<span class="tag">💰${esc(r.price)}</span>` : ""}
-        ${modeTags(r)}
       </div>
       ${r.note ? `<div class="note">${esc(r.note)}</div>` : ""}
     </div>`).join("")
@@ -161,9 +146,9 @@ function renderList(){
 
   const btn = $("drawBtn");
   btn.disabled = !mode || list.length === 0;
-  btn.textContent = !mode ? "請先選一個選項"
+  btn.textContent = !mode ? "請先選內用或外帶"
                   : list.length === 0 ? "沒有符合的餐廳"
-                  : "🎲 抽!";
+                  : "🎲 幫我決定!";
 }
 
 document.querySelectorAll(".mode-btn").forEach(b => b.addEventListener("click", () => {
