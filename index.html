@@ -79,15 +79,71 @@
   .card .note{font-size:13px;color:var(--muted);margin-top:6px}
   .empty{text-align:center;color:var(--muted);padding:30px 0;grid-column:1/-1}
   footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
-  /* 新增候選店家按鈕 */
+
+  /* 新增候選店家(小按鈕) */
+  .add-box{margin-top:28px;text-align:center}
   .add-link{
-    display:block;max-width:420px;margin:32px auto 0;text-align:center;
-    border:2px dashed var(--blue);color:var(--blue);background:var(--white);
-    border-radius:16px;padding:14px;font-size:16px;font-weight:700;text-decoration:none;
+    display:inline-block;
+    border:1.5px dashed var(--blue);color:var(--blue);background:var(--white);
+    border-radius:999px;padding:8px 18px;font-size:14px;font-weight:600;text-decoration:none;
   }
   .add-link:active{transform:scale(.97)}
   /* 淺色備註 */
-  .add-hint{text-align:center;color:var(--muted);font-size:12px;margin-top:8px;opacity:.85}
+  .add-hint{color:var(--muted);font-size:12px;margin-top:6px;opacity:.85}
+
+  /* ===== 喝不喝飲料(擲硬幣) ===== */
+  .coin-section{
+    margin-top:28px;padding-top:30px;border-top:2px dashed #cfd8e6;text-align:center;
+  }
+  .coin-section h2{font-size:20px;color:var(--blue);margin-bottom:6px}
+  .coin-sub{font-size:13px;color:var(--muted);margin-bottom:22px}
+  .coin-wrap{
+    width:140px;height:140px;margin:0 auto;perspective:800px;cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .coin-wrap.toss{animation:toss 1.4s ease-out}
+  @keyframes toss{
+    0%{transform:translateY(0)}
+    40%{transform:translateY(-60px)}
+    100%{transform:translateY(0)}
+  }
+  .coin{
+    width:100%;height:100%;position:relative;transform-style:preserve-3d;
+    transition:transform 1.4s cubic-bezier(.2,.7,.2,1);
+  }
+  .coin-face{
+    position:absolute;inset:0;border-radius:50%;
+    backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    display:flex;align-items:center;justify-content:center;
+    font-size:38px;font-weight:800;color:var(--white);letter-spacing:2px;
+    border:7px solid rgba(255,255,255,.55);
+    box-shadow:inset 0 0 0 4px rgba(0,0,0,.12),0 8px 16px rgba(0,0,0,.22);
+  }
+  .coin-face.unknown{background:var(--blue);font-size:60px;letter-spacing:0}
+  .coin-face.yes{background:var(--green)}
+  .coin-face.no{background:var(--red);transform:rotateY(180deg)}
+
+  /* 結果 + 語錄(旁邊,空間不夠會換到下方) */
+  .coin-result{
+    min-height:40px;margin-top:22px;
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 12px;
+  }
+  .coin-result.pop{animation:pop .4s}
+  .coin-main{font-size:clamp(24px,6vw,30px);font-weight:800;color:var(--blue)}
+  .coin-quip{
+    font-size:15px;font-weight:600;color:var(--white);
+    padding:6px 14px;border-radius:999px;line-height:1.4;
+  }
+  .coin-quip.yes{background:var(--green)}
+  .coin-quip.no{background:var(--red)}
+
+  .coin-btn{
+    width:100%;max-width:420px;margin-top:6px;border:none;background:var(--blue);color:var(--white);
+    font-size:20px;font-weight:700;padding:16px;border-radius:16px;cursor:pointer;
+    box-shadow:0 6px 0 #00285f;transition:.1s;
+  }
+  .coin-btn:active{transform:translateY(4px);box-shadow:0 2px 0 #00285f}
+  .coin-btn:disabled{background:#b8c2d0;box-shadow:0 6px 0 #97a3b5;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -111,8 +167,26 @@
     </div>
     <div class="grid" id="grid"></div>
   </section>
-  <a class="add-link" href="https://forms.gle/sAkoeXp1YPQdkjMS8" target="_blank" rel="noopener">➕ 點我前往新增候選店家</a>
-  <p class="add-hint">填寫表單後,需等待 2-5 分鐘才會更新至系統</p>
+
+  <!-- 新增候選店家 -->
+  <div class="add-box">
+    <a class="add-link" href="https://forms.gle/sAkoeXp1YPQdkjMS8" target="_blank" rel="noopener">➕ 點我前往新增候選店家</a>
+    <p class="add-hint">填寫表單後,需等待 2-5 分鐘才會更新至系統</p>
+  </div>
+
+  <!-- 喝不喝飲料 -->
+  <section class="coin-section">
+    <h2>🥤 喝不喝飲料</h2>
+    <p class="coin-sub">讓硬幣來決定!</p>
+    <div class="coin-wrap" id="coinWrap">
+      <div class="coin" id="coin">
+        <div class="coin-face unknown" id="coinFront">?</div>
+        <div class="coin-face no">不喝</div>
+      </div>
+    </div>
+    <div class="coin-result" id="coinResult"></div>
+    <button class="coin-btn" id="coinBtn">🪙 擲硬幣</button>
+  </section>
 </main>
 <footer>薪水換熱量 © 吃飽睡覺準備下班</footer>
 <!-- 每次開啟都抓最新的餐廳清單,避免吃到舊快取 -->
@@ -228,6 +302,78 @@ $("drawBtn").addEventListener("click", () => {
     btn.textContent = "🎲 再抽一次";
   }, 1400);
 });
+
+// ---------- 喝不喝飲料(擲硬幣) ----------
+// ▼ 想改語錄,直接改這裡的文字就好(每句要用引號包起來、結尾加逗號)
+const QUIPS = {
+  yes: [
+    "喝啦 哪次不喝?",
+    "不喝飲料難道要喝水嗎?",
+    "問就是要喝"
+  ],
+  no: [
+    "不是要減肥嗎 喝什麼飲料?",
+    "省幾次飲料錢就可以買機票了還喝",
+    "喝水不好嗎?"
+  ]
+};
+const lastQuip = { yes: -1, no: -1 };
+
+// 隨機挑一句,且不和上一次同一邊挑到的一樣
+function pickQuip(side){
+  const list = QUIPS[side];
+  let i;
+  do { i = Math.floor(Math.random() * list.length); }
+  while (list.length > 1 && i === lastQuip[side]);
+  lastQuip[side] = i;
+  return list[i];
+}
+
+let coinAngle = 0;
+let flipping = false;
+function flipCoin(){
+  if (flipping) return;
+  flipping = true;
+  const drink = Math.random() < 0.5;            // true = 喝(正面),false = 不喝(反面)
+  const wrap = $("coinWrap"), coin = $("coin"), out = $("coinResult"), btn = $("coinBtn");
+  const front = $("coinFront");
+
+  btn.disabled = true;
+  out.innerHTML = "";
+  out.className = "coin-result";
+
+  // 先對齊到正面,再多轉 5 圈;不喝就多加半圈停在反面
+  const base = Math.ceil(coinAngle / 360) * 360;
+  coinAngle = base + 360 * 5 + (drink ? 0 : 180);
+  coin.style.transform = `rotateY(${coinAngle}deg)`;
+
+  // 硬幣高速旋轉時,把正面從「?」悄悄換成「喝」
+  if (drink) {
+    setTimeout(() => {
+      front.className = "coin-face yes";
+      front.textContent = "喝";
+    }, 250);
+  }
+
+  // 重新觸發彈起動畫
+  wrap.classList.remove("toss");
+  void wrap.offsetWidth;
+  wrap.classList.add("toss");
+
+  setTimeout(() => {
+    const side = drink ? "yes" : "no";
+    out.innerHTML =
+      `<span class="coin-main">${drink ? "🥤 喝!" : "🚫 不喝!"}</span>` +
+      `<span class="coin-quip ${side}">${esc(pickQuip(side))}</span>`;
+    out.className = "coin-result pop";
+    btn.disabled = false;
+    btn.textContent = "🪙 再擲一次";
+    flipping = false;
+  }, 1450);
+}
+$("coinWrap").addEventListener("click", flipCoin);
+$("coinBtn").addEventListener("click", flipCoin);
+
 renderList();
 loadSheet();
 </script>
