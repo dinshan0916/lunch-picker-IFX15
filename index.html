@@ -23,6 +23,7 @@
     font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
     background:var(--bg);color:var(--text);line-height:1.5;
   }
+  button{touch-action:manipulation}
   header{
     background:var(--blue);color:var(--white);
     text-align:center;padding:28px 16px 22px;position:relative;
@@ -88,7 +89,6 @@
     border-radius:999px;padding:8px 18px;font-size:14px;font-weight:600;text-decoration:none;
   }
   .add-link:active{transform:scale(.97)}
-  /* 淺色備註 */
   .add-hint{color:var(--muted);font-size:12px;margin-top:6px;opacity:.85}
 
   /* ===== 喝不喝飲料(擲硬幣) ===== */
@@ -123,7 +123,6 @@
   .coin-face.yes{background:var(--green)}
   .coin-face.no{background:var(--red);transform:rotateY(180deg)}
 
-  /* 結果 + 語錄(旁邊,空間不夠會換到下方) */
   .coin-result{
     min-height:40px;margin-top:22px;
     display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 12px;
@@ -144,6 +143,58 @@
   }
   .coin-btn:active{transform:translateY(4px);box-shadow:0 2px 0 #00285f}
   .coin-btn:disabled{background:#b8c2d0;box-shadow:0 6px 0 #97a3b5;cursor:not-allowed}
+
+  /* ===== 迷你小工具:猜拳 + 木魚(並排) ===== */
+  .mini-row{
+    display:grid;grid-template-columns:1fr 1fr;gap:12px;
+    margin-top:34px;padding-top:26px;border-top:2px dashed #cfd8e6;
+  }
+  .mini{
+    position:relative;overflow:hidden;
+    background:var(--white);border-radius:14px;padding:12px 8px 14px;text-align:center;
+    box-shadow:0 2px 8px rgba(0,0,0,.05);
+  }
+  .mini.rps{
+    border-top:5px solid var(--blue);
+    display:flex;flex-direction:column;justify-content:center;  /* 內容垂直置中 */
+  }
+  .mini.fish{border-top:5px solid var(--red)}
+  .mini h3{font-size:15px;color:var(--blue);margin-bottom:8px}
+  .mini .sub{font-size:12px;color:var(--muted);min-height:18px;margin-top:6px}
+
+  /* 猜拳(按鈕平均分配寬度,稍微放大) */
+  .rps-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:6px}
+  .rps-btn{
+    border:2px solid #cfd8e6;background:var(--bg);border-radius:12px;
+    font-size:27px;line-height:1;padding:10px 0;width:100%;cursor:pointer;transition:.1s;
+  }
+  .rps-btn:active{transform:scale(.9);border-color:var(--blue)}
+  .rps-out{min-height:42px;margin-top:8px;font-size:14px;font-weight:700;color:var(--text)}  /* 預留兩行高度,避免跳動 */
+  .rps-out.win{color:var(--green)}
+  .rps-out.lose{color:var(--red)}
+  .rps-out.tie{color:var(--muted)}
+  .rps-out.pop{animation:pop .3s}
+
+  /* 木魚 */
+  .fish-top{position:absolute;top:6px;right:6px}
+  .mute-btn{border:none;background:transparent;font-size:14px;cursor:pointer;opacity:.7;padding:2px}
+  .fish-btn{
+    width:76px;height:76px;border-radius:50%;border:none;cursor:pointer;
+    background:radial-gradient(circle at 35% 30%,#ff4d6a,var(--red) 60%,#a50020);
+    color:var(--white);font-size:18px;font-weight:800;letter-spacing:1px;
+    box-shadow:0 5px 0 #7a0018;transition:.06s;-webkit-tap-highlight-color:transparent;
+  }
+  .fish-btn:active,.fish-btn.hit{transform:translateY(4px) scale(.96);box-shadow:0 1px 0 #7a0018}
+  .fish-count{margin-top:10px;font-size:14px;font-weight:700;color:var(--blue)}
+  .plus{
+    position:absolute;left:50%;top:48%;transform:translateX(-50%);
+    font-size:14px;font-weight:800;color:var(--red);pointer-events:none;
+    animation:floatUp .9s ease-out forwards;
+  }
+  @keyframes floatUp{
+    0%{opacity:1;transform:translate(-50%,0)}
+    100%{opacity:0;transform:translate(-50%,-48px)}
+  }
 </style>
 </head>
 <body>
@@ -186,6 +237,28 @@
     </div>
     <div class="coin-result" id="coinResult"></div>
     <button class="coin-btn" id="coinBtn">🪙 擲硬幣</button>
+  </section>
+
+  <!-- 猜拳 + 電子木魚(並排) -->
+  <section class="mini-row">
+    <div class="mini rps">
+      <h3>✊ 跟電腦猜拳</h3>
+      <div class="rps-btns">
+        <button class="rps-btn" data-i="0" aria-label="石頭">✊</button>
+        <button class="rps-btn" data-i="1" aria-label="剪刀">✌️</button>
+        <button class="rps-btn" data-i="2" aria-label="布">✋</button>
+      </div>
+      <div class="rps-out" id="rpsOut">出拳吧!</div>
+      <div class="sub" id="rpsScore">勝 0 ・ 平 0 ・ 負 0</div>
+    </div>
+
+    <div class="mini fish" id="fishBox">
+      <div class="fish-top"><button class="mute-btn" id="muteBtn" aria-label="音效開關">🔊</button></div>
+      <h3>🐟 電子木魚</h3>
+      <button class="fish-btn" id="fishBtn" aria-label="敲木魚">木魚</button>
+      <div class="fish-count" id="fishCount">功德 0</div>
+      <div class="sub">敲一下 破事少一件</div>
+    </div>
   </section>
 </main>
 <footer>薪水換熱量 © 吃飽睡覺準備下班</footer>
@@ -377,6 +450,67 @@ function flipCoin(){
 }
 $("coinWrap").addEventListener("click", flipCoin);
 $("coinBtn").addEventListener("click", flipCoin);
+
+// ---------- 跟電腦猜拳 ----------
+const RPS = ["✊", "✌️", "✋"];            // 0 石頭、1 剪刀、2 布
+const score = { w: 0, t: 0, l: 0 };
+document.querySelectorAll(".rps-btn").forEach(b => b.addEventListener("click", () => {
+  const me = Number(b.dataset.i);
+  const cpu = Math.floor(Math.random() * 3);
+  const d = (me - cpu + 3) % 3;             // 0 平手、2 你贏、1 你輸
+  const out = $("rpsOut");
+  let text, cls;
+  if (d === 0){ score.t++; text = "平手 🤝"; cls = "tie"; }
+  else if (d === 2){ score.w++; text = "你贏了 🎉"; cls = "win"; }
+  else { score.l++; text = "你輸了 😭"; cls = "lose"; }
+  out.className = "rps-out pop " + cls;
+  out.innerHTML = `${RPS[me]} vs ${RPS[cpu]}<br>${text}`;
+  $("rpsScore").textContent = `勝 ${score.w} ・ 平 ${score.t} ・ 負 ${score.l}`;
+}));
+
+// ---------- 電子木魚 ----------
+let merit = 0, muted = false;
+try{
+  merit = parseInt(localStorage.getItem("merit") || "0", 10) || 0;
+  muted = localStorage.getItem("muted") === "1";
+}catch(e){}
+$("fishCount").textContent = "功德 " + merit;
+$("muteBtn").textContent = muted ? "🔇" : "🔊";
+
+let audioCtx = null;
+function knock(){
+  if (muted) return;
+  try{
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const t = audioCtx.currentTime;
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = "sine";
+    o.frequency.setValueAtTime(900, t);
+    o.frequency.exponentialRampToValueAtTime(420, t + 0.09);
+    g.gain.setValueAtTime(0.6, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(t); o.stop(t + 0.2);
+  }catch(e){}
+}
+$("fishBtn").addEventListener("click", () => {
+  merit++;
+  try{ localStorage.setItem("merit", merit); }catch(e){}
+  $("fishCount").textContent = "功德 " + merit;
+  knock();
+  if (navigator.vibrate) navigator.vibrate(12);
+
+  const p = document.createElement("span");
+  p.className = "plus";
+  p.textContent = "功德 +1";
+  $("fishBox").appendChild(p);
+  setTimeout(() => p.remove(), 900);
+});
+$("muteBtn").addEventListener("click", () => {
+  muted = !muted;
+  $("muteBtn").textContent = muted ? "🔇" : "🔊";
+  try{ localStorage.setItem("muted", muted ? "1" : "0"); }catch(e){}
+});
 
 renderList();
 loadSheet();
