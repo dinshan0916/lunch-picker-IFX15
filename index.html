@@ -80,7 +80,6 @@
   .card .note{font-size:13px;color:var(--muted);margin-top:6px}
   .empty{text-align:center;color:var(--muted);padding:30px 0;grid-column:1/-1}
   footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
-
   /* 新增候選店家(小按鈕) */
   .add-box{margin-top:28px;text-align:center}
   .add-link{
@@ -90,7 +89,6 @@
   }
   .add-link:active{transform:scale(.97)}
   .add-hint{color:var(--muted);font-size:12px;margin-top:6px;opacity:.85}
-
   /* ===== 喝不喝飲料(擲硬幣) ===== */
   .coin-section{
     margin-top:28px;padding-top:30px;border-top:2px dashed #cfd8e6;text-align:center;
@@ -122,7 +120,6 @@
   .coin-face.unknown{background:var(--blue);font-size:60px;letter-spacing:0}
   .coin-face.yes{background:var(--green)}
   .coin-face.no{background:var(--red);transform:rotateY(180deg)}
-
   .coin-result{
     min-height:40px;margin-top:22px;
     display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 12px;
@@ -135,7 +132,6 @@
   }
   .coin-quip.yes{background:var(--green)}
   .coin-quip.no{background:var(--red)}
-
   .coin-btn{
     width:100%;max-width:420px;margin-top:6px;border:none;background:var(--blue);color:var(--white);
     font-size:20px;font-weight:700;padding:16px;border-radius:16px;cursor:pointer;
@@ -144,57 +140,81 @@
   .coin-btn:active{transform:translateY(4px);box-shadow:0 2px 0 #00285f}
   .coin-btn:disabled{background:#b8c2d0;box-shadow:0 6px 0 #97a3b5;cursor:not-allowed}
 
-  /* ===== 迷你小工具:猜拳 + 木魚(並排) ===== */
+  /* ===== 迷你小工具:猜拳 + 木魚(並排,已放大) ===== */
   .mini-row{
-    display:grid;grid-template-columns:1fr 1fr;gap:12px;
+    display:grid;grid-template-columns:1fr 1fr;gap:14px;
     margin-top:34px;padding-top:26px;border-top:2px dashed #cfd8e6;
   }
   .mini{
     position:relative;overflow:hidden;
-    background:var(--white);border-radius:14px;padding:12px 8px 14px;text-align:center;
-    box-shadow:0 2px 8px rgba(0,0,0,.05);
+    background:var(--white);border-radius:16px;padding:18px 10px 20px;text-align:center;
+    box-shadow:0 2px 10px rgba(0,0,0,.06);
+    display:flex;flex-direction:column;justify-content:center;   /* 內容垂直置中 */
   }
-  .mini.rps{
-    border-top:5px solid var(--blue);
-    display:flex;flex-direction:column;justify-content:center;  /* 內容垂直置中 */
-  }
-  .mini.fish{border-top:5px solid var(--red)}
-  .mini h3{font-size:15px;color:var(--blue);margin-bottom:8px}
-  .mini .sub{font-size:12px;color:var(--muted);min-height:18px;margin-top:6px}
+  .mini.rps{border-top:6px solid var(--blue)}
+  .mini.fish{border-top:6px solid var(--red)}
+  .mini h3{font-size:17px;color:var(--blue);margin-bottom:10px}
+  .mini .sub{font-size:13px;color:var(--muted);min-height:18px;margin-top:8px}
 
-  /* 猜拳(按鈕平均分配寬度,稍微放大) */
-  .rps-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:6px}
+  /* 猜拳:出拳舞台 */
+  .rps-arena{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    height:58px;margin-bottom:4px;
+  }
+  .hand{
+    --flip:1;
+    display:inline-block;font-size:42px;line-height:1;
+    transform:scaleX(var(--flip));
+  }
+  .hand.cpu{--flip:-1}                       /* 電腦的手左右翻轉,讓兩隻拳頭面對面 */
+  .hand.dim{opacity:.4}
+  .hand.shake{animation:rpsShake .26s ease-in-out 3}
+  .hand.reveal{animation:handPop .35s}
+  @keyframes rpsShake{
+    0%,100%{transform:scaleX(var(--flip)) translateY(0) rotate(0deg)}
+    50%{transform:scaleX(var(--flip)) translateY(-14px) rotate(-14deg)}
+  }
+  @keyframes handPop{
+    0%{transform:scaleX(var(--flip)) scale(.6)}
+    60%{transform:scaleX(var(--flip)) scale(1.3)}
+    100%{transform:scaleX(var(--flip)) scale(1)}
+  }
+  .vs{font-size:13px;font-weight:800;color:var(--muted)}
+
+  /* 猜拳按鈕 */
+  .rps-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
   .rps-btn{
-    border:2px solid #cfd8e6;background:var(--bg);border-radius:12px;
-    font-size:27px;line-height:1;padding:10px 0;width:100%;cursor:pointer;transition:.1s;
+    border:2px solid #cfd8e6;background:var(--bg);border-radius:14px;
+    font-size:30px;line-height:1;padding:14px 0;width:100%;cursor:pointer;transition:.1s;
   }
   .rps-btn:active{transform:scale(.9);border-color:var(--blue)}
-  .rps-out{min-height:42px;margin-top:8px;font-size:14px;font-weight:700;color:var(--text)}  /* 預留兩行高度,避免跳動 */
+  .rps-btn:disabled{opacity:.5;cursor:not-allowed}
+  .rps-out{min-height:26px;margin-top:10px;font-size:16px;font-weight:700;color:var(--text)}
   .rps-out.win{color:var(--green)}
   .rps-out.lose{color:var(--red)}
   .rps-out.tie{color:var(--muted)}
   .rps-out.pop{animation:pop .3s}
 
   /* 木魚 */
-  .fish-top{position:absolute;top:6px;right:6px}
-  .mute-btn{border:none;background:transparent;font-size:14px;cursor:pointer;opacity:.7;padding:2px}
+  .fish-top{position:absolute;top:8px;right:8px}
+  .mute-btn{border:none;background:transparent;font-size:16px;cursor:pointer;opacity:.7;padding:2px}
   .fish-btn{
-    width:76px;height:76px;border-radius:50%;border:none;cursor:pointer;
+    width:96px;height:96px;border-radius:50%;border:none;cursor:pointer;
     background:radial-gradient(circle at 35% 30%,#ff4d6a,var(--red) 60%,#a50020);
-    color:var(--white);font-size:18px;font-weight:800;letter-spacing:1px;
-    box-shadow:0 5px 0 #7a0018;transition:.06s;-webkit-tap-highlight-color:transparent;
+    color:var(--white);font-size:22px;font-weight:800;letter-spacing:1px;
+    box-shadow:0 6px 0 #7a0018;transition:.06s;-webkit-tap-highlight-color:transparent;
   }
-  .fish-btn:active,.fish-btn.hit{transform:translateY(4px) scale(.96);box-shadow:0 1px 0 #7a0018}
-  .fish-count{margin-top:10px;font-size:14px;font-weight:700;color:var(--blue)}
+  .fish-btn:active,.fish-btn.hit{transform:translateY(5px) scale(.96);box-shadow:0 1px 0 #7a0018}
+  .fish-count{margin-top:12px;font-size:16px;font-weight:700;color:var(--blue)}
   .plus{
     position:absolute;left:50%;top:44%;transform:translateX(-50%);
-    font-size:18px;font-weight:800;color:#FFB300;pointer-events:none;white-space:nowrap;
+    font-size:20px;font-weight:800;color:#FFB300;pointer-events:none;white-space:nowrap;
     text-shadow:0 1px 3px rgba(0,0,0,.45);
     animation:floatUp .9s ease-out forwards;
   }
   @keyframes floatUp{
     0%{opacity:1;transform:translate(-50%,0)}
-    100%{opacity:0;transform:translate(-50%,-48px)}
+    100%{opacity:0;transform:translate(-50%,-52px)}
   }
 </style>
 </head>
@@ -219,13 +239,11 @@
     </div>
     <div class="grid" id="grid"></div>
   </section>
-
   <!-- 新增候選店家 -->
   <div class="add-box">
     <a class="add-link" href="https://forms.gle/sAkoeXp1YPQdkjMS8" target="_blank" rel="noopener">➕ 點我前往新增候選店家</a>
     <p class="add-hint">填寫表單後,需等待 2-5 分鐘才會更新至系統</p>
   </div>
-
   <!-- 喝不喝飲料 -->
   <section class="coin-section">
     <h2>🥤 喝不喝飲料</h2>
@@ -239,11 +257,15 @@
     <div class="coin-result" id="coinResult"></div>
     <button class="coin-btn" id="coinBtn">🪙 擲硬幣</button>
   </section>
-
   <!-- 猜拳 + 電子木魚(並排) -->
   <section class="mini-row">
     <div class="mini rps">
       <h3>✊ 跟電腦猜拳</h3>
+      <div class="rps-arena">
+        <span class="hand me" id="handMe">✊</span>
+        <span class="vs">VS</span>
+        <span class="hand cpu" id="handCpu">✊</span>
+      </div>
       <div class="rps-btns">
         <button class="rps-btn" data-i="0" aria-label="石頭">✊</button>
         <button class="rps-btn" data-i="1" aria-label="剪刀">✌️</button>
@@ -252,11 +274,10 @@
       <div class="rps-out" id="rpsOut">出拳吧!</div>
       <div class="sub" id="rpsScore">勝 0 ・ 平 0 ・ 負 0</div>
     </div>
-
     <div class="mini fish" id="fishBox">
       <div class="fish-top"><button class="mute-btn" id="muteBtn" aria-label="音效開關">🔊</button></div>
       <h3>🐟 電子木魚</h3>
-      <button class="fish-btn" id="fishBtn" aria-label="敲木魚">木魚</button>
+      <div><button class="fish-btn" id="fishBtn" aria-label="敲木魚">木魚</button></div>
       <div class="fish-count" id="fishCount">功德 0</div>
       <div class="sub">敲一下 破事少一件</div>
     </div>
@@ -376,7 +397,6 @@ $("drawBtn").addEventListener("click", () => {
     btn.textContent = "🎲 再抽一次";
   }, 1400);
 });
-
 // ---------- 喝不喝飲料(擲硬幣) ----------
 // ▼ 想改語錄,直接改這裡的文字就好(每句要用引號包起來、結尾加逗號)
 const QUIPS = {
@@ -396,7 +416,6 @@ const QUIPS = {
   ]
 };
 const lastQuip = { yes: -1, no: -1 };
-
 // 隨機挑一句,且不和上一次同一邊挑到的一樣
 function pickQuip(side){
   const list = QUIPS[side];
@@ -406,7 +425,6 @@ function pickQuip(side){
   lastQuip[side] = i;
   return list[i];
 }
-
 let coinAngle = 0;
 let flipping = false;
 function flipCoin(){
@@ -415,16 +433,13 @@ function flipCoin(){
   const drink = Math.random() < 0.5;            // true = 喝(正面),false = 不喝(反面)
   const wrap = $("coinWrap"), coin = $("coin"), out = $("coinResult"), btn = $("coinBtn");
   const front = $("coinFront");
-
   btn.disabled = true;
   out.innerHTML = "";
   out.className = "coin-result";
-
   // 先對齊到正面,再多轉 5 圈;不喝就多加半圈停在反面
   const base = Math.ceil(coinAngle / 360) * 360;
   coinAngle = base + 360 * 5 + (drink ? 0 : 180);
   coin.style.transform = `rotateY(${coinAngle}deg)`;
-
   // 硬幣高速旋轉時,把正面從「?」悄悄換成「喝」
   if (drink) {
     setTimeout(() => {
@@ -432,12 +447,10 @@ function flipCoin(){
       front.textContent = "喝";
     }, 250);
   }
-
   // 重新觸發彈起動畫
   wrap.classList.remove("toss");
   void wrap.offsetWidth;
   wrap.classList.add("toss");
-
   setTimeout(() => {
     const side = drink ? "yes" : "no";
     out.innerHTML =
@@ -452,21 +465,52 @@ function flipCoin(){
 $("coinWrap").addEventListener("click", flipCoin);
 $("coinBtn").addEventListener("click", flipCoin);
 
-// ---------- 跟電腦猜拳 ----------
+// ---------- 跟電腦猜拳(含動畫) ----------
 const RPS = ["✊", "✌️", "✋"];            // 0 石頭、1 剪刀、2 布
 const score = { w: 0, t: 0, l: 0 };
-document.querySelectorAll(".rps-btn").forEach(b => b.addEventListener("click", () => {
+let rpsBusy = false;
+const rpsBtns = document.querySelectorAll(".rps-btn");
+
+rpsBtns.forEach(b => b.addEventListener("click", () => {
+  if (rpsBusy) return;
+  rpsBusy = true;
+
   const me = Number(b.dataset.i);
   const cpu = Math.floor(Math.random() * 3);
   const d = (me - cpu + 3) % 3;             // 0 平手、2 你贏、1 你輸
-  const out = $("rpsOut");
-  let text, cls;
-  if (d === 0){ score.t++; text = "平手 🤝"; cls = "tie"; }
-  else if (d === 2){ score.w++; text = "你贏了 🎉"; cls = "win"; }
-  else { score.l++; text = "你輸了 😭"; cls = "lose"; }
-  out.className = "rps-out pop " + cls;
-  out.innerHTML = `${RPS[me]} vs ${RPS[cpu]}<br>${text}`;
-  $("rpsScore").textContent = `勝 ${score.w} ・ 平 ${score.t} ・ 負 ${score.l}`;
+  const handMe = $("handMe"), handCpu = $("handCpu"), out = $("rpsOut");
+
+  rpsBtns.forEach(x => x.disabled = true);
+
+  // 1) 兩隻拳頭一起搖,同時喊口令
+  handMe.textContent = "✊";
+  handCpu.textContent = "✊";
+  handMe.className = "hand me shake";
+  handCpu.className = "hand cpu shake";
+  out.className = "rps-out";
+  out.textContent = "剪刀…";
+  setTimeout(() => { out.textContent = "石頭…"; }, 260);
+  setTimeout(() => { out.textContent = "布!"; }, 520);
+
+  // 2) 搖完後翻牌,顯示結果
+  setTimeout(() => {
+    handMe.textContent = RPS[me];
+    handCpu.textContent = RPS[cpu];
+    handMe.className = "hand me reveal";
+    handCpu.className = "hand cpu reveal";
+
+    let text, cls;
+    if (d === 0){ score.t++; text = "平手 🤝"; cls = "tie"; }
+    else if (d === 2){ score.w++; text = "你贏了 🎉"; cls = "win"; handCpu.classList.add("dim"); }
+    else { score.l++; text = "你輸了 😭"; cls = "lose"; handMe.classList.add("dim"); }
+
+    out.className = "rps-out pop " + cls;
+    out.textContent = text;
+    $("rpsScore").textContent = `勝 ${score.w} ・ 平 ${score.t} ・ 負 ${score.l}`;
+
+    rpsBtns.forEach(x => x.disabled = false);
+    rpsBusy = false;
+  }, 800);
 }));
 
 // ---------- 電子木魚 ----------
@@ -477,7 +521,6 @@ try{
 }catch(e){}
 $("fishCount").textContent = "功德 " + merit;
 $("muteBtn").textContent = muted ? "🔇" : "🔊";
-
 let audioCtx = null;
 function knock(){
   if (muted) return;
@@ -500,7 +543,6 @@ $("fishBtn").addEventListener("click", () => {
   $("fishCount").textContent = "功德 " + merit;
   knock();
   if (navigator.vibrate) navigator.vibrate(12);
-
   const p = document.createElement("span");
   p.className = "plus";
   p.textContent = "功德 +1";
@@ -512,7 +554,6 @@ $("muteBtn").addEventListener("click", () => {
   $("muteBtn").textContent = muted ? "🔇" : "🔊";
   try{ localStorage.setItem("muted", muted ? "1" : "0"); }catch(e){}
 });
-
 renderList();
 loadSheet();
 </script>
